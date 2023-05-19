@@ -10,6 +10,7 @@
  * string values to be updated
  *
  */
+const ExpressError = require("./expressError");
 
 function sqlForPartialUpdate(table, items, key, id) {
   // keep track of item indexes
@@ -38,7 +39,7 @@ function sqlForPartialUpdate(table, items, key, id) {
   const column = Object.keys(items);
   for (const col of column) {
     if (!allowedColumns.includes(col)) {
-      throw new Error(`Invalid column: ${col}`);
+      throw new ExpressError(`Invalid key: ${col}`, 401);
     }
   }
 

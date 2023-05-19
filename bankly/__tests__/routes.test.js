@@ -10,8 +10,7 @@ const bcrypt = require("bcrypt");
 const createToken = require("../helpers/createToken");
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
-
-console.log(db);
+const { authUser } = require("../middleware/auth");
 
 // tokens for our sample users
 const tokens = {};
@@ -36,6 +35,57 @@ beforeEach(async function () {
     );
     tokens[user[0]] = createToken(user[0], user[6]);
   }
+});
+
+// TEST BUG #4
+describe("authUser", () => {
+  it("should set req.curr_username and req.curr_admin if a valid token is provided", () => {
+    const req = {
+      body: {
+        _token: tokens.u1,
+      },
+      query: {},
+    };
+    const res = {};
+    const next = jest.fn();
+
+    authUser(req, res, next);
+
+    expect(req.curr_username).toBe("u1");
+    expect(req.curr_admin).toBe(false);
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not set req.curr_username and req.curr_admin if no token is provided", () => {
+    const req = {
+      body: {},
+      query: {},
+    };
+    const res = {};
+    const next = jest.fn();
+
+    authUser(req, res, next);
+
+    expect(req.curr_username).toBeUndefined();
+    expect(req.curr_admin).toBeUndefined();
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it("should raise an error if an invalid token is provided", () => {
+    const req = {
+      body: {
+        _token: "invalid_token_here",
+      },
+      query: {},
+    };
+    const res = {};
+    const next = jest.fn();
+
+    authUser(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+    expect(next).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("POST /auth/register", function () {
@@ -73,6 +123,7 @@ describe("POST /auth/register", function () {
   });
 });
 
+// tests BUG #6
 describe("POST /auth/login", function () {
   test("should allow a correct username/password to log in", async function () {
     const response = await request(app).post("/auth/login").send({
@@ -87,7 +138,6 @@ describe("POST /auth/login", function () {
     expect(admin).toBe(false);
   });
 
-  // TESTS BUG #1
   test("should throw 401 error w/ invalid cred", async function () {
     const response = await request(app).post("/auth/login").send({
       username: "u1",
@@ -114,6 +164,22 @@ describe("GET /users", function () {
       .send({ _token: tokens.u1 });
     expect(response.statusCode).toBe(200);
     expect(response.body.users.length).toBe(3);
+  });
+
+  // TESTS BUG #3
+  test("users obj should only contain: username, first, and last", async function () {
+    const response = await request(app)
+      .get("/users")
+      .send({ _token: tokens.u1 });
+    expect(response.statusCode).toBe(200);
+    console.log(response.body);
+    expect(response.body).toEqual({
+      users: [
+        { username: "u1", first_name: "fn1", last_name: "ln1" },
+        { username: "u2", first_name: "fn2", last_name: "ln2" },
+        { username: "u3", first_name: "fn3", last_name: "ln3" },
+      ],
+    });
   });
 });
 
@@ -144,11 +210,22 @@ describe("PATCH /users/[username]", function () {
     expect(response.statusCode).toBe(401);
   });
 
+  // TESTS BUG 1
   test("should deny access if not admin/right user", async function () {
     const response = await request(app)
       .patch("/users/u1")
       .send({ _token: tokens.u2 }); // wrong user!
     expect(response.statusCode).toBe(401);
+  });
+
+  // TESTS BUG 1
+  test("should allow access if not admin/right user", async function () {
+    const response = await request(app)
+      .patch("/users/u2")
+      .send({ _token: tokens.u2, first_name: "user2" }); // wrong user!
+    expect(response.statusCode).toBe(200);
+    console.log(response.body);
+    expect(response.body.user.first_name).toBe("user2");
   });
 
   test("should patch data if admin", async function () {
@@ -172,8 +249,13 @@ describe("PATCH /users/[username]", function () {
       .patch("/users/u1")
       .send({ _token: tokens.u1, admin: true });
     expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({
+      status: 401,
+      message: "Invalid key: admin",
+    });
   });
 
+  // FIXES BUG #5
   test("should return 404 if cannot find", async function () {
     const response = await request(app)
       .patch("/users/not-a-user")

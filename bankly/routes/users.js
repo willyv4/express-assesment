@@ -64,7 +64,7 @@ router.get(
  * # BUG 5 updating fields other than these {first_name, last_name, phone, email} is possible
  */
 
-// fix bug 7 allow current user to edit own and admins to edit any with or || operator
+// fix bug #1 allow current user to edit own and admins to edit any with or || operator
 router.patch(
   "/:username",
   authUser || requireLogin || requireAdmin,
