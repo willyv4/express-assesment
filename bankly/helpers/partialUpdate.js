@@ -17,11 +17,12 @@ function sqlForPartialUpdate(table, items, key, id) {
 
   let idx = 1;
   let columns = [];
+  const allowedColumns = ["first_name", "last_name", "phone", "email"];
 
   // filter out keys that start with "_" -- we don't want these in DB
   for (let key in items) {
     if (key.startsWith("_")) {
-      delete items[key]
+      delete items[key];
     }
   }
 
@@ -32,13 +33,26 @@ function sqlForPartialUpdate(table, items, key, id) {
 
   // build query
   let cols = columns.join(", ");
+
+  //  FIXES BUG #5
+  const column = Object.keys(items);
+  for (const col of column) {
+    if (!allowedColumns.includes(col)) {
+      throw new Error(`Invalid column: ${col}`);
+    }
+  }
+
   let query = `UPDATE ${table} SET ${cols} WHERE ${key}=$${idx} RETURNING *`;
+
+  console.log(table, "table");
+  console.log(cols, "cols");
+  console.log(key, "key");
+  console.log(idx, "idx");
 
   let values = Object.values(items);
   values.push(id);
 
-  return {query, values};
+  return { query, values };
 }
-
 
 module.exports = sqlForPartialUpdate;
