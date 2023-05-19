@@ -1,14 +1,14 @@
 const hoursObj = {
-  00: "twelve",
-  01: "one",
-  02: "two",
-  03: "three",
-  04: "four",
-  05: "five",
-  06: "six",
-  07: "seven",
-  08: "eight",
-  09: "nine",
+  0: "twelve",
+  1: "one",
+  2: "two",
+  3: "three",
+  4: "four",
+  5: "five",
+  6: "six",
+  7: "seven",
+  8: "eight",
+  9: "nine",
   10: "ten",
   11: "eleven",
   12: "twelve",
@@ -59,7 +59,7 @@ const onesObj = {
   9: "nine",
 };
 
-const timeToWords = (time) => {
+function timeWord(time) {
   let [hours, mins] = time.split(":");
   let [tens, ones] = mins.split("");
 
@@ -69,14 +69,16 @@ const timeToWords = (time) => {
   let onesText;
   let timeOfDay;
 
-  hours = parseInt(hours, 10);
-  mins = parseInt(mins, 10);
+  hours = parseInt(hours);
+  mins = parseInt(mins);
 
-  mins >= 10 && mins < 20
-    ? (minsText = teensObj[mins])
-    : (tensText = tensObj[tens]);
-  onesText = onesObj[ones];
-  minsText = `${tensText} ${onesText}`;
+  if (mins >= 10 && mins < 20) {
+    minsText = teensObj[mins];
+  } else {
+    tensText = tensObj[tens];
+    onesText = onesObj[ones];
+    minsText = tensText ? `${tensText} ${onesText}` : onesText;
+  }
 
   if (time === "12:00" || time === "00:00") {
     time === "12:00" ? (hourText = "noon") : (hourText = "midnight");
@@ -87,6 +89,8 @@ const timeToWords = (time) => {
     hours >= 12 ? (timeOfDay = "pm") : (timeOfDay = "am");
     return `${hourText} ${minsText} ${timeOfDay}`;
   }
-};
+}
 
-console.log(timeToWords("01:01"));
+console.log(timeWord("01:13"));
+
+module.exports = timeWord;
