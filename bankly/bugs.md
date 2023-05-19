@@ -1,4 +1,4 @@
-Bug 1:
+### Bug 1:
 
 - Description: Missing throw statement for invalid credentials.
 - File: models/user.js
@@ -6,7 +6,7 @@ Bug 1:
 
 ---
 
-Bug 2:
+### Bug 2:
 
 - Description: Duplicate module exports of app.
 - File: app.js
@@ -14,7 +14,7 @@ Bug 2:
 
 ---
 
-Bug 3:
+### Bug 3:
 
 - Description: Sensitive information returned in DB query.
 - File: models/users.js
@@ -22,7 +22,7 @@ Bug 3:
 
 ---
 
-Bug 4:
+### Bug 4:
 
 - Description: decode needed to be replaced with verify in middleware/auth.js.
 - File: middleware/auth.js
@@ -30,7 +30,7 @@ Bug 4:
 
 ---
 
-Bug 5:
+### Bug 5:
 
 - Description: Missing throw statement.
 - File: models/user.js
@@ -38,7 +38,7 @@ Bug 5:
 
 ---
 
-Bug 6:
+### Bug 6:
 
 - Description: Query missing await keyword.
 - File: routes/auth.js
@@ -46,7 +46,7 @@ Bug 6:
 
 ---
 
-Bug 7:
+### Bug 7:
 
 - Description: Add OR operator to allow current users to edit their own profile as well as admins.
 - File: routes/users.js
