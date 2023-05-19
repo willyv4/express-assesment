@@ -4,7 +4,7 @@ Bug 1:
 - File: models/user.js
 - Line: 71
 
---
+---
 
 Bug 2:
 
@@ -12,7 +12,7 @@ Bug 2:
 - File: app.js
 - Line: 36
 
---
+---
 
 Bug 3:
 
@@ -20,7 +20,7 @@ Bug 3:
 - File: models/users.js
 - Line: 82
 
---
+---
 
 Bug 4:
 
@@ -28,7 +28,7 @@ Bug 4:
 - File: middleware/auth.js
 - Line: 53
 
---
+---
 
 Bug 5:
 
@@ -36,7 +36,7 @@ Bug 5:
 - File: models/user.js
 - Line: 115
 
---
+---
 
 Bug 6:
 
@@ -44,7 +44,7 @@ Bug 6:
 - File: routes/auth.js
 - Line: 51
 
---
+---
 
 Bug 7:
 
